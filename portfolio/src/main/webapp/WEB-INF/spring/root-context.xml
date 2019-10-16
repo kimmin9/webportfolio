@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	<!-- XML과 JSON출력을 지원한다. -->
+	<bean
+		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<ref bean="jsonMessageConverter" />
+				<ref bean="xmlMessageConverter" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="jsonMessageConverter"
+		class="org.springframework.http.converter.json.GsonHttpMessageConverter">
+	</bean>
+
+	<bean id="xmlMessageConverter"
+		class="org.springframework.http.converter.xml.MarshallingHttpMessageConverter">
+	</bean>
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+    <bean id="dataSource"
+        class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"></property>
+        <property name="url"
+            value="jdbc:mysql://portfolio.cgwnqbfjhfdt.ap-northeast-2.rds.amazonaws.com:3306/portflioservice"><!-- /test?useSSL=false&amp;serverTimezone=UTC -->
+        </property>
+        <property name="username" value="admin"></property>
+        <property name="password" value="00000000"></property>
+    </bean>        
+
+	<!-- mybatis -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<!-- 아래부분은 매핑할 xml파일이 있는 패키지경로를 설정한다. -->
+		<property name="typeAliasesPackage" value="com.portfolio.www.dao" />
+		<property name="mapperLocations" value="classpath:/mybatis/mapper/*.xml" />
+	</bean>
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
+</beans>
